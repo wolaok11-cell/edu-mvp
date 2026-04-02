@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家教平台预览 - 后台</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="shell">
+    <div class="nav panel">
+      <div class="brand">
+        <div class="brand-mark">台</div>
+        <div>Operator Console Preview</div>
+      </div>
+      <div class="nav-links">
+        <a href="./index.html">前台首页</a>
+        <a href="./orders.html">订单页</a>
+        <a href="./admin.html">后台预览</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="./index.html">返回前台</a>
+      </div>
+    </div>
+
+    <section class="grid-4">
+      <div class="admin-card">
+        <div class="kicker">总成交额</div>
+        <div class="value">12,480 USDC</div>
+      </div>
+      <div class="admin-card">
+        <div class="kicker">今日新增订单</div>
+        <div class="value">17</div>
+      </div>
+      <div class="admin-card">
+        <div class="kicker">待审核教师</div>
+        <div class="value">9</div>
+      </div>
+      <div class="admin-card">
+        <div class="kicker">待处理争议</div>
+        <div class="value">3</div>
+      </div>
+    </section>
+
+    <div class="layout-main section">
+      <div class="stack">
+        <div class="detail-card">
+          <h2>教师审核</h2>
+          <div class="teacher-list">
+            <div class="mini-card">
+              <strong>Lin Zhang · 托福口语</strong>
+              <div class="muted">提交时间：2026-04-02 09:12</div>
+              <div class="actions">
+                <a class="btn btn-primary" href="./admin.html">通过审核</a>
+                <a class="btn btn-secondary" href="./admin.html">查看材料</a>
+              </div>
+            </div>
+            <div class="mini-card">
+              <strong>Yuna Kim · 初中数学</strong>
+              <div class="muted">材料缺少成绩证明</div>
+              <div class="actions">
+                <a class="btn btn-secondary" href="./admin.html">要求补充</a>
+                <a class="btn btn-danger" href="./admin.html">驳回申请</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h2>争议处理</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="dot"></div>
+              <div><strong>订单 #OD202603300009</strong><div class="muted">学生主张课程时长不足，已提交录屏和聊天截图。</div></div>
+            </div>
+            <div class="timeline-item">
+              <div class="dot"></div>
+              <div><strong>当前建议</strong><div class="muted">部分退款 10 USDC，剩余金额正常结算。</div></div>
+            </div>
+          </div>
+          <div class="actions">
+            <a class="btn btn-primary" href="./admin.html">部分退款</a>
+            <a class="btn btn-secondary" href="./admin.html">正常放款</a>
+            <a class="btn btn-danger" href="./admin.html">全额退款</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="detail-card">
+          <h2>财务与链上</h2>
+          <div class="table-like">
+            <div class="row"><span>托管中订单</span><strong>21</strong></div>
+            <div class="row"><span>待放款金额</span><strong>1,168 USDC</strong></div>
+            <div class="row"><span>今日自动放款成功率</span><strong>100%</strong></div>
+            <div class="row"><span>平均结算时间</span><strong>29.4 小时</strong></div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h2>试运行说明</h2>
+          <div class="notice">
+            这个后台页是静态预览，用来确认运营视角的字段、模块和动作设计。真实版本会对接
+            `docs/openapi.yaml` 里的后台接口和 `infra/db/init.sql` 的数据表。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
