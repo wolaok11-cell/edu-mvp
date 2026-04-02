@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家教平台预览 - 订单页</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="shell">
+    <div class="nav panel">
+      <div class="brand">
+        <div class="brand-mark">学</div>
+        <div>TrustTutor MVP</div>
+      </div>
+      <div class="nav-links">
+        <a href="./index.html">首页</a>
+        <a href="./tutors.html">找老师</a>
+        <a href="./orders.html">我的订单</a>
+        <a href="./admin.html">后台预览</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-primary" href="./checkout.html">新建订单</a>
+      </div>
+    </div>
+
+    <section class="panel page-hero">
+      <h1 class="page-title">我的订单</h1>
+      <div class="chips">
+        <span class="chip">全部</span>
+        <span class="chip">待支付</span>
+        <span class="chip">待上课</span>
+        <span class="chip">待确认</span>
+        <span class="chip">已完成</span>
+        <span class="chip">争议中</span>
+      </div>
+    </section>
+
+    <section class="section order-list">
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <h3>订单 #OD202604020017</h3>
+            <div class="meta">
+              <span>教师：Alice Chen</span>
+              <span>时间：4 月 5 日 19:00</span>
+              <span>金额：42 USDC</span>
+            </div>
+          </div>
+          <div class="tag tag-warn">待确认</div>
+        </div>
+        <div class="actions">
+          <a class="btn btn-primary" href="./orders.html">确认完成</a>
+          <a class="btn btn-danger" href="./admin.html">发起争议</a>
+        </div>
+      </div>
+
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <h3>订单 #OD202604010026</h3>
+            <div class="meta">
+              <span>教师：Mark Liu</span>
+              <span>时间：4 月 3 日 20:00</span>
+              <span>金额：35 USDC</span>
+            </div>
+          </div>
+          <div class="tag tag-ok">已完成</div>
+        </div>
+        <div class="actions">
+          <a class="btn btn-secondary" href="./tutor-detail.html">再次预约</a>
+          <a class="btn btn-secondary" href="./orders.html">提交评价</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
