@@ -1,0 +1,30 @@
+# Node / package managers
+node_modules/
+.pnpm-store/
+.yarn/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
