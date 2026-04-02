@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家教平台预览 - 下单页</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="shell">
+    <div class="nav panel">
+      <div class="brand">
+        <div class="brand-mark">学</div>
+        <div>TrustTutor MVP</div>
+      </div>
+      <div class="nav-links">
+        <a href="./index.html">首页</a>
+        <a href="./tutors.html">找老师</a>
+        <a href="./orders.html">我的订单</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="./tutor-detail.html">返回详情</a>
+      </div>
+    </div>
+
+    <section class="panel page-hero">
+      <h1 class="page-title">确认课程订单</h1>
+      <p class="subcopy">下单页尽量短，重点突出价格透明和托管说明。</p>
+    </section>
+
+    <div class="layout-main section">
+      <div class="stack">
+        <div class="detail-card">
+          <h2>课程信息</h2>
+          <div class="table-like">
+            <div class="row"><span>教师</span><strong>Alice Chen</strong></div>
+            <div class="row"><span>科目</span><strong>雅思写作</strong></div>
+            <div class="row"><span>课程</span><strong>一对一 60 分钟</strong></div>
+            <div class="row"><span>上课时间</span><strong>2026-04-05 19:00 - 20:00</strong></div>
+            <div class="row"><span>备注</span><strong>重点提升 Task 2 结构与论证</strong></div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h2>支付方式</h2>
+          <div class="chips">
+            <span class="chip">USDC</span>
+            <span class="chip">Arbitrum</span>
+            <span class="chip">嵌入式钱包 / 外部钱包</span>
+          </div>
+          <div class="notice" style="margin-top:16px;">
+            你的课程费用将先由平台托管，课程完成并确认后再结算给老师。
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="detail-card">
+          <h2>费用明细</h2>
+          <div class="table-like">
+            <div class="row"><span>课程费</span><strong>40 USDC</strong></div>
+            <div class="row"><span>平台服务费</span><strong>2 USDC</strong></div>
+            <div class="row total"><span>实付金额</span><strong>42 USDC</strong></div>
+          </div>
+          <div class="actions">
+            <a class="btn btn-primary" href="./orders.html">确认并支付</a>
+            <a class="btn btn-secondary" href="./tutor-detail.html">返回修改</a>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h2>支付成功后</h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="dot"></div>
+              <div><strong>订单已创建</strong><div class="muted">状态进入待支付或已托管。</div></div>
+            </div>
+            <div class="timeline-item">
+              <div class="dot"></div>
+              <div><strong>费用进入托管</strong><div class="muted">平台保留结算控制，降低单方违约风险。</div></div>
+            </div>
+            <div class="timeline-item">
+              <div class="dot"></div>
+              <div><strong>完课后确认放款</strong><div class="muted">学生确认或超时后，系统自动结算给老师。</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
