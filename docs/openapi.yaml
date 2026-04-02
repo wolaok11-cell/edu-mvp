@@ -1,0 +1,1137 @@
+openapi: 3.1.0
+info:
+  title: Decentralized Tutoring Platform API
+  version: 0.1.0
+  description: 去中心化家教平台 MVP 接口契约，聚焦 P0/P1 核心链路。
+servers:
+  - url: /api/v1
+    description: Frontend API
+tags:
+  - name: Auth
+  - name: Tutors
+  - name: Orders
+  - name: Payments
+  - name: Disputes
+  - name: Reviews
+  - name: Notifications
+  - name: Admin
+paths:
+  /auth/email/send-code:
+    post:
+      tags: [Auth]
+      summary: 发送邮箱验证码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, scene]
+              properties:
+                email:
+                  type: string
+                  format: email
+                scene:
+                  type: string
+                  enum: [login, register, bind, reset_password]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /auth/email/login:
+    post:
+      tags: [Auth]
+      summary: 邮箱验证码登录或注册
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, code]
+              properties:
+                email:
+                  type: string
+                  format: email
+                code:
+                  type: string
+                display_name:
+                  type: string
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /me:
+    get:
+      tags: [Auth]
+      summary: 获取当前用户
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 当前用户
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /tutors:
+    get:
+      tags: [Tutors]
+      summary: 获取教师广场列表
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: subject_id
+          schema:
+            type: integer
+        - in: query
+          name: price_min
+          schema:
+            type: number
+        - in: query
+          name: price_max
+          schema:
+            type: number
+        - in: query
+          name: rating_min
+          schema:
+            type: number
+        - in: query
+          name: teaching_mode
+          schema:
+            type: string
+            enum: [online, offline, hybrid]
+        - in: query
+          name: verification_status
+          schema:
+            type: string
+            enum: [pending, approved, rejected, suspended]
+        - in: query
+          name: language
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [recommended, rating_desc, sales_desc, price_asc, latest]
+            default: recommended
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 教师列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorPageResponse'
+
+  /tutors/{id}:
+    get:
+      tags: [Tutors]
+      summary: 获取教师详情
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 教师详情
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/TutorDetail'
+
+  /tutor/profile:
+    get:
+      tags: [Tutors]
+      summary: 获取我的教师资料
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 教师资料
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/TutorProfile'
+    post:
+      tags: [Tutors]
+      summary: 创建或更新教师资料
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertTutorProfileRequest'
+      responses:
+        '200':
+          description: 保存成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /lesson-products:
+    post:
+      tags: [Tutors]
+      summary: 创建课程产品
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertLessonProductRequest'
+      responses:
+        '200':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /orders:
+    get:
+      tags: [Orders]
+      summary: 获取我的订单
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [student, tutor]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending_payment, escrowed, scheduled, tutor_marked_complete, completed, disputed, refunded, cancelled]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 订单列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPageResponse'
+    post:
+      tags: [Orders]
+      summary: 创建订单
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '200':
+          description: 订单创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/CreateOrderResponse'
+
+  /orders/{id}:
+    get:
+      tags: [Orders]
+      summary: 获取订单详情
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 订单详情
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Order'
+
+  /orders/{id}/mark-complete:
+    post:
+      tags: [Orders]
+      summary: 教师提交完课
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 提交成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /orders/{id}/confirm-complete:
+    post:
+      tags: [Orders]
+      summary: 学生确认完课
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 确认成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /orders/{id}/payment-intent:
+    get:
+      tags: [Payments]
+      summary: 获取支付参数
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 支付参数
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/PaymentIntent'
+
+  /orders/{id}/payment-tx:
+    post:
+      tags: [Payments]
+      summary: 上报支付交易哈希
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tx_hash]
+              properties:
+                tx_hash:
+                  type: string
+      responses:
+        '200':
+          description: 上报成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /orders/{id}/dispute:
+    post:
+      tags: [Disputes]
+      summary: 发起争议
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDisputeRequest'
+      responses:
+        '200':
+          description: 发起成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Dispute'
+
+  /disputes/{id}/evidences:
+    post:
+      tags: [Disputes]
+      summary: 上传争议证据
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDisputeEvidenceRequest'
+      responses:
+        '200':
+          description: 上传成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /orders/{id}/reviews:
+    post:
+      tags: [Reviews]
+      summary: 提交评价
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewRequest'
+      responses:
+        '200':
+          description: 提交成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: 获取通知列表
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 通知列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPageResponse'
+
+  /admin/tutors/verifications:
+    get:
+      tags: [Admin]
+      summary: 获取教师审核列表
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, approved, rejected, suspended]
+      responses:
+        '200':
+          description: 审核列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorPageResponse'
+
+  /admin/disputes/{id}/resolve:
+    post:
+      tags: [Admin]
+      summary: 裁决争议
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resolution_type]
+              properties:
+                resolution_type:
+                  type: string
+                  enum: [release_to_tutor, full_refund_to_student, partial_refund]
+                resolution_amount:
+                  type: string
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: 裁决成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /admin/dashboard/overview:
+    get:
+      tags: [Admin]
+      summary: 获取后台概览
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/AdminOverview'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    MessageResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: ok
+
+    AuthResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+            user:
+              $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        role:
+          type: string
+          enum: [student, tutor, admin, arbitrator]
+        wallet_address:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        display_name:
+          type: string
+        avatar_url:
+          type: string
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    Subject:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+
+    Availability:
+      type: object
+      properties:
+        id:
+          type: integer
+        weekday:
+          type: integer
+        start_time:
+          type: string
+        end_time:
+          type: string
+        timezone:
+          type: string
+
+    LessonProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        duration_minutes:
+          type: integer
+        price:
+          type: string
+        currency:
+          type: string
+        lesson_type:
+          type: string
+        delivery_mode:
+          type: string
+
+    TutorProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        headline:
+          type: string
+          nullable: true
+        introduction:
+          type: string
+          nullable: true
+        teaching_modes:
+          type: array
+          items:
+            type: string
+        hourly_rate:
+          type: string
+        currency:
+          type: string
+        years_of_experience:
+          type: integer
+        verification_status:
+          type: string
+        is_listed:
+          type: boolean
+        average_rating:
+          type: number
+        total_reviews:
+          type: integer
+        completed_lessons:
+          type: integer
+
+    TutorSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        display_name:
+          type: string
+        headline:
+          type: string
+          nullable: true
+        avatar_url:
+          type: string
+          nullable: true
+        hourly_rate:
+          type: string
+        currency:
+          type: string
+        average_rating:
+          type: number
+        completed_lessons:
+          type: integer
+        verification_status:
+          type: string
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+
+    TutorDetail:
+      allOf:
+        - $ref: '#/components/schemas/TutorSummary'
+        - type: object
+          properties:
+            introduction:
+              type: string
+              nullable: true
+            languages:
+              type: array
+              items:
+                type: string
+            availabilities:
+              type: array
+              items:
+                $ref: '#/components/schemas/Availability'
+            lesson_products:
+              type: array
+              items:
+                $ref: '#/components/schemas/LessonProduct'
+            trust_summary:
+              type: object
+              properties:
+                identity_verified:
+                  type: boolean
+                credential_verified:
+                  type: boolean
+                completed_orders:
+                  type: integer
+                dispute_rate:
+                  type: number
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_no:
+          type: string
+        student_user_id:
+          type: integer
+        tutor_user_id:
+          type: integer
+        order_title:
+          type: string
+        duration_minutes:
+          type: integer
+        total_amount:
+          type: string
+        platform_fee:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [pending_payment, escrowed, scheduled, tutor_marked_complete, completed, disputed, refunded, cancelled]
+        scheduled_start_at:
+          type: string
+          format: date-time
+          nullable: true
+        scheduled_end_at:
+          type: string
+          format: date-time
+          nullable: true
+        complete_confirm_deadline:
+          type: string
+          format: date-time
+          nullable: true
+        chain_id:
+          type: integer
+          nullable: true
+        chain_order_id:
+          type: string
+          nullable: true
+        tx_payment_hash:
+          type: string
+          nullable: true
+        tx_release_hash:
+          type: string
+          nullable: true
+        tx_refund_hash:
+          type: string
+          nullable: true
+
+    PaymentIntent:
+      type: object
+      properties:
+        chain_id:
+          type: integer
+        token_address:
+          type: string
+        escrow_contract_address:
+          type: string
+        amount:
+          type: string
+        order_id:
+          type: integer
+        chain_order_id:
+          type: string
+
+    Dispute:
+      type: object
+      properties:
+        id:
+          type: integer
+        order_id:
+          type: integer
+        raised_by_user_id:
+          type: integer
+        reason_code:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [open, under_review, waiting_evidence, resolved, closed]
+        resolution_type:
+          type: string
+          nullable: true
+        resolution_amount:
+          type: string
+          nullable: true
+
+    AdminOverview:
+      type: object
+      properties:
+        gmv:
+          type: string
+        today_new_orders:
+          type: integer
+        pending_tutor_verifications:
+          type: integer
+        pending_disputes:
+          type: integer
+        completion_rate:
+          type: number
+        dispute_rate:
+          type: number
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - tutor_user_id
+        - lesson_product_id
+        - subject_id
+        - scheduled_start_at
+        - scheduled_end_at
+      properties:
+        tutor_user_id:
+          type: integer
+        lesson_product_id:
+          type: integer
+        subject_id:
+          type: integer
+        scheduled_start_at:
+          type: string
+          format: date-time
+        scheduled_end_at:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          nullable: true
+
+    CreateOrderResponse:
+      type: object
+      properties:
+        order_id:
+          type: integer
+        order_no:
+          type: string
+        status:
+          type: string
+        payment_amount:
+          type: string
+        currency:
+          type: string
+
+    UpsertTutorProfileRequest:
+      type: object
+      required: [teaching_modes, hourly_rate, currency]
+      properties:
+        headline:
+          type: string
+        introduction:
+          type: string
+        teaching_modes:
+          type: array
+          items:
+            type: string
+            enum: [online, offline, hybrid]
+        hourly_rate:
+          type: string
+        currency:
+          type: string
+        years_of_experience:
+          type: integer
+
+    UpsertLessonProductRequest:
+      type: object
+      required: [title, duration_minutes, price, currency]
+      properties:
+        subject_id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+        duration_minutes:
+          type: integer
+        price:
+          type: string
+        currency:
+          type: string
+        lesson_type:
+          type: string
+        delivery_mode:
+          type: string
+
+    CreateDisputeRequest:
+      type: object
+      required: [reason_code, expected_resolution]
+      properties:
+        reason_code:
+          type: string
+          enum: [tutor_no_show, duration_not_enough, content_not_match, student_no_show, other]
+        description:
+          type: string
+        expected_resolution:
+          type: string
+          enum: [release_to_tutor, full_refund_to_student, partial_refund]
+
+    CreateDisputeEvidenceRequest:
+      type: object
+      properties:
+        file_url:
+          type: string
+        file_cid:
+          type: string
+        description:
+          type: string
+
+    CreateReviewRequest:
+      type: object
+      required: [to_user_id, rating]
+      properties:
+        to_user_id:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    TutorPageResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/PaginatedTutorList'
+
+    OrderPageResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/PaginatedOrderList'
+
+    NotificationPageResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/PaginatedNotificationList'
+
+    PaginatedTutorList:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/TutorSummary'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total:
+          type: integer
+        has_more:
+          type: boolean
+
+    PaginatedOrderList:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total:
+          type: integer
+        has_more:
+          type: boolean
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        is_read:
+          type: boolean
+        related_type:
+          type: string
+          nullable: true
+        related_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    PaginatedNotificationList:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total:
+          type: integer
+        has_more:
+          type: boolean
